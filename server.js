@@ -6,15 +6,15 @@ const bodyParser = require('body-parser');
 require("dotenv").config();
 const PORT = process.env.PORT || 6001;
 const URI = process.env.URI || "mongodb://localhost:27017/fake";
-const TEMP=process.env.TEST || "Failed";
 // database mongodb - attempting to get it done online
-
 const mongoose = require("mongoose");
 mongoose.connect(URI);
 const connection = mongoose.connection;
 connection.once("open", () => {
   console.log("MongoDB database connection established successfully");
 });
+// cors - add origin if you only want to allow specfic servers
+app.use(cors())
 // read the json data
 app.use(express.json())
 // Parse JSON bodies
@@ -31,5 +31,4 @@ app.use("*", (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`server has started on port ${PORT}`);
-  console.log(`the dotenv is ${TEMP}`);
 });
