@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
+const bodyParser = require('body-parser');
 //
 require("dotenv").config();
 const PORT = process.env.PORT || 6001;
@@ -14,8 +15,13 @@ const connection = mongoose.connection;
 connection.once("open", () => {
   console.log("MongoDB database connection established successfully");
 });
+// read the json data
+app.use(express.json())
+// Parse JSON bodies
+app.use(bodyParser.json());
 
-// If the connection throws an error
+// Parse URL-encoded bodies
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use("/api", require("./routes/foo"));
 
