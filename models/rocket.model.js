@@ -7,4 +7,4 @@ const BlockSchema = new Schema({
 })
 
 
-module.exports = mongoose.model('Block', BlockSchema);
+module.exports = mongoose.model('Rocket', BlockSchema);
