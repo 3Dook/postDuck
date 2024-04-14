@@ -6,43 +6,94 @@
     <title></title>
   </head>
   <body>
-    <div>Search</div>
     <div>
-      <div>ADD BUTTON</div>
-      <div>ADD CONTAINER</div>
+      <div>
+        <h2>TARGET Source</h2>
+        <input type="text" id="apiInput">
+        <button id="preload1">PRELOAD</button>
+      </div>
+      <div> 
+        <h2>GET</h2>
+        <button id="getDataBtn">Get Data</button>
+      </div>
+      <div>
+      </div>
+        <h2> POST </h2>
+        <form method="post" action="http://localhost:6003/api">
+          <label for="name">Name:</label><br>
+          <input type="text" id="name" name="name" required><br><br>
+          <input type="submit" value="Submit">
+        </form>
     </div>
-    <div>
-      <div>GET BUTTON</div>
-      <div>GET CONTAINER</div>
-    </div>
-    <div>SPECIFIC FINDER</div>
-    <br></br>
-    <br></br>
-    <br></br>
-    <br></br>
-    
-    <div> 
-    <h2>GET</h2>
-    <button id="getDataBtn">Get Data</button>
-    <div id="jsonDataContainer"></div>
-    </div>
-    <br></br>
-    <h2> POST </h2>
-    <form method="post" action="http://localhost:6003/api">
-      <label for="name">Name:</label><br>
-      <input type="text" id="name" name="name" required><br><br>
-      <input type="submit" value="Submit">
-    </form>
+    <div id="blockContainer"></div>
     <script>
-        document.getElementById('getDataBtn').addEventListener('click', function() {
-            fetch('http://localhost:6003/api') // Assuming your server endpoint is '/api/data'
-                .then(response => response.json())
-                .then(data => {
-                    // Display the received JSON data in the div
-                    document.getElementById('jsonDataContainer').innerText = JSON.stringify(data, null, 2);
-                })
-                .catch(error => console.error('Error fetching data:', error));
-        });
+      // Initialize a variable to store the input value
+      let userInputValue = '';
+
+      // Get the input element
+      const userInput = document.getElementById('apiInput');
+
+      // Add an event listener for the 'input' event
+      userInput.addEventListener('input', function(event) {
+          // Update the userInputValue variable as the user types
+          userInputValue = event.target.value;
+
+          // Log the updated value to the console (you can do other operations here)
+          console.log(userInputValue);
+      });
+
+      document.getElementById('preload1').addEventListener('click', function() {
+        userInputValue = 'http://localhost:6003/api';
+        userInput.value = 'http://localhost:6003/api'; 
+      });
+      
+      function sendDeleteRequest(blockId){
+        let tempUri = userInputValue + '/' + blockId
+        console.log(tempUri) 
+        fetch(tempUri, {
+          method: 'DELETE',
+          headers: {
+            'content-type': 'application/json',
+          },
+        })
+        .then(response => {
+            console.log('DATA deleted: ', response);
+        })
+        .catch(error =>{
+          console.log('ERROR OCCURED: ', error);
+        })
+      }
+
+      document.getElementById('getDataBtn').addEventListener('click', function() {
+          console.log(userInputValue);
+          fetch(userInputValue) // Assuming your server endpoint is '/api/data'
+              .then(response => response.json())
+              .then(data => {
+                //document.getElementById('jsonDataContainer').innerText = JSON.stringify(data, null, 2);
+                // Display the received JSON data in the div
+                data.forEach(object => {
+                  const objectDiv = document.createElement('div');
+                  // set content
+                  objectDiv.textContent = `Name: ${object.name} - id: ${object._id}`
+                   
+                  // delete button 
+                  const deleteButton = document.createElement('button');
+                  deleteButton.textContent = 'X';
+                  deleteButton.addEventListener('click', function() {
+                    // send out delete request
+                    sendDeleteRequest(object._id); 
+                    // potentially reload the get button
+                  });
+                  // Append the div to container
+                  document.getElementById('blockContainer').appendChild(deleteButton)
+                  document.getElementById('blockContainer').appendChild(objectDiv)
+                });
+              })
+              .catch(error => console.error('Error fetching data:', error));
+      });
+
+
+
     </script>
   </body>
 </html>
