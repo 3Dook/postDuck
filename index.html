@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title></title>
+    <style>
+      #formContainer {
+        display: none;
+      }
+      
+      .borderDiv {
+        border: 2px solid black; /* Border width, style, and color */
+        padding: 10px; /* Optional: Add padding inside the border */
+        margin-bottom: 20px; /* Optional: Add margin at the bottom for spacing */
+      }
+    </style>
   </head>
   <body>
     <div>
@@ -18,14 +29,19 @@
       </div>
       <div>
       </div>
+      <button id="toggleAddButton"> ADD TOGGLE </button>
+    </div>
+    <div id="blockContainer" class="borderDiv">
+      <div id="formContainer">
         <h2> POST </h2>
         <form method="post" action="http://localhost:6003/api">
           <label for="name">Name:</label><br>
           <input type="text" id="name" name="name" required><br><br>
           <input type="submit" value="Submit">
         </form>
+      </div>
     </div>
-    <div id="blockContainer"></div>
+
     <script>
       // Initialize a variable to store the input value
       let userInputValue = '';
@@ -63,7 +79,36 @@
           console.log('ERROR OCCURED: ', error);
         })
       }
+      function sendGetRequest(){
+        console.log(userInputValue);
+        fetch(userInputValue) // Assuming your server endpoint is '/api/data'
+            .then(response => response.json())
+            .then(data => {
+              //document.getElementById('jsonDataContainer').innerText = JSON.stringify(data, null, 2);
+              // Display the received JSON data in the div
+              data.forEach(object => {
+                const objectDiv = document.createElement('div');
+                // set content
+                objectDiv.textContent = `Name: ${object.name} - id: ${object._id}`
+                 
+                // delete button 
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'X';
+                deleteButton.addEventListener('click', function() {
+                  // send out delete request
+                  sendDeleteRequest(object._id); 
+                  // potentially reload the get button
+                  sendGetRequest()
+                });
+                // Append the div to container
+                document.getElementById('blockContainer').appendChild(deleteButton)
+                document.getElementById('blockContainer').appendChild(objectDiv)
+              });
+            })
+            .catch(error => console.error('Error fetching data:', error));
+      }
 
+      
       document.getElementById('getDataBtn').addEventListener('click', function() {
           console.log(userInputValue);
           fetch(userInputValue) // Assuming your server endpoint is '/api/data'
@@ -83,6 +128,7 @@
                     // send out delete request
                     sendDeleteRequest(object._id); 
                     // potentially reload the get button
+                    sendGetRequest()
                   });
                   // Append the div to container
                   document.getElementById('blockContainer').appendChild(deleteButton)
@@ -92,8 +138,26 @@
               .catch(error => console.error('Error fetching data:', error));
       });
 
+    function togglePostForm(){
+      const formContainer = document.getElementById('formContainer');
+      const toggleButton = document.getElementById('toggleAddButton');
+      // Toggle the display property of the formContainer
+      if (formContainer.style.display == 'none') {
+          formContainer.style.display = 'block';
+          toggleButton.textContent = 'Hide Add Form';
+      }
+      else if (formContainer.style.display == '') {
+          formContainer.style.display = 'block';
+          toggleButton.textContent = 'Hide Add Form';
+      } else {
+          formContainer.style.display = 'none';
+          toggleButton.textContent = 'ADD FORM';
+      } 
+    }
 
-
+    document.getElementById('toggleAddButton').addEventListener('click', function() {
+        togglePostForm();
+    })
     </script>
   </body>
 </html>
