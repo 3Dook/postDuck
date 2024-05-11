@@ -38,7 +38,7 @@
     <div id="allContainer" class="borderDiv">
       <div id="formContainer" class="divContainer">
         <h2> POST </h2>
-        <form method="post" action="http://localhost:6003/api">
+        <form id="addForm" method="post" action="http://localhost:6003/api">
           <label for="name">Name:</label><br>
           <input type="text" id="name" name="name" required><br><br>
           <input type="submit" value="Submit">
@@ -68,7 +68,35 @@
         userInputValue = 'http://localhost:6003/api';
         userInput.value = 'http://localhost:6003/api'; 
       });
-      
+
+      document.getElementById('addForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        // Get form data
+        const formData = new FormData(e.target);
+        const formObject = {};
+        formData.forEach((value, key) => {
+            formObject[key] = value;
+        });
+
+        fetch(userInputValue, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formObject)
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Response from server:', data);
+            // Handle response data as needed
+            sendGetRequest();
+        })
+        .catch(error => {
+            console.error('Error from Posting to server:', error);
+            // Handle errors
+        });
+      });
+
       function sendDeleteRequest(blockId){
         let tempUri = userInputValue + '/' + blockId
         console.log(tempUri) 
@@ -80,6 +108,8 @@
         })
         .then(response => {
             console.log('DATA deleted: ', response);
+            sendGetRequest();
+            toggleContainer('blockContainer');
         })
         .catch(error =>{
           console.log('ERROR OCCURED: ', error);
@@ -98,18 +128,18 @@
                 const objectDiv = document.createElement('div');
                 // set content
                 objectDiv.textContent = `Name: ${object.name} - id: ${object._id}`
-                 
+                // add class  
+                objectDiv.classList.add('borderDiv');
                 // delete button 
                 const deleteButton = document.createElement('button');
                 deleteButton.textContent = 'X';
                 deleteButton.addEventListener('click', function() {
                   // send out delete request
                   sendDeleteRequest(object._id); 
-                  // potentially reload the get button
-                  sendGetRequest()
                 });
                 // Append the div to container
-                document.getElementById('blockContainer').appendChild(deleteButton)
+                objectDiv.appendChild(deleteButton)
+                //document.getElementById('blockContainer').appendChild(deleteButton)
                 document.getElementById('blockContainer').appendChild(objectDiv)
               });
             })
