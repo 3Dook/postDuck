@@ -8,7 +8,11 @@
       #formContainer {
         display: none;
       }
-      
+     
+      .divContainer {
+        display: none;
+      }
+
       .borderDiv {
         border: 2px solid black; /* Border width, style, and color */
         padding: 10px; /* Optional: Add padding inside the border */
@@ -25,20 +29,22 @@
       </div>
       <div> 
         <h2>GET</h2>
-        <button id="getDataBtn">Get Data</button>
+        <button id="getDataBtn">GET</button>
       </div>
       <div>
       </div>
-      <button id="toggleAddButton"> ADD TOGGLE </button>
+      <button id="toggleAddButton"> ADD</button>
     </div>
-    <div id="blockContainer" class="borderDiv">
-      <div id="formContainer">
+    <div id="allContainer" class="borderDiv">
+      <div id="formContainer" class="divContainer">
         <h2> POST </h2>
         <form method="post" action="http://localhost:6003/api">
           <label for="name">Name:</label><br>
           <input type="text" id="name" name="name" required><br><br>
           <input type="submit" value="Submit">
         </form>
+      </div>
+      <div id="blockContainer" class="divContainer">
       </div>
     </div>
 
@@ -86,6 +92,8 @@
             .then(data => {
               //document.getElementById('jsonDataContainer').innerText = JSON.stringify(data, null, 2);
               // Display the received JSON data in the div
+              // clear out old date if any.
+              document.getElementById('blockContainer').innerHTML = '';
               data.forEach(object => {
                 const objectDiv = document.createElement('div');
                 // set content
@@ -106,57 +114,34 @@
               });
             })
             .catch(error => console.error('Error fetching data:', error));
+        toggleContainer('blockContainer');
       }
 
       
       document.getElementById('getDataBtn').addEventListener('click', function() {
-          console.log(userInputValue);
-          fetch(userInputValue) // Assuming your server endpoint is '/api/data'
-              .then(response => response.json())
-              .then(data => {
-                //document.getElementById('jsonDataContainer').innerText = JSON.stringify(data, null, 2);
-                // Display the received JSON data in the div
-                data.forEach(object => {
-                  const objectDiv = document.createElement('div');
-                  // set content
-                  objectDiv.textContent = `Name: ${object.name} - id: ${object._id}`
-                   
-                  // delete button 
-                  const deleteButton = document.createElement('button');
-                  deleteButton.textContent = 'X';
-                  deleteButton.addEventListener('click', function() {
-                    // send out delete request
-                    sendDeleteRequest(object._id); 
-                    // potentially reload the get button
-                    sendGetRequest()
-                  });
-                  // Append the div to container
-                  document.getElementById('blockContainer').appendChild(deleteButton)
-                  document.getElementById('blockContainer').appendChild(objectDiv)
-                });
-              })
-              .catch(error => console.error('Error fetching data:', error));
+        sendGetRequest()
       });
 
-    function togglePostForm(){
-      const formContainer = document.getElementById('formContainer');
-      const toggleButton = document.getElementById('toggleAddButton');
-      // Toggle the display property of the formContainer
-      if (formContainer.style.display == 'none') {
-          formContainer.style.display = 'block';
-          toggleButton.textContent = 'Hide Add Form';
+
+    function toggleContainer(containerId){
+      const targetDiv = document.getElementById(containerId);
+      if (targetDiv.style.display === 'block'){
+        targetDiv.style.display = 'none';
+        return;
       }
-      else if (formContainer.style.display == '') {
-          formContainer.style.display = 'block';
-          toggleButton.textContent = 'Hide Add Form';
-      } else {
-          formContainer.style.display = 'none';
-          toggleButton.textContent = 'ADD FORM';
-      } 
+      const allDivs = document.querySelectorAll('.divContainer');
+      // hide all the all divs
+      allDivs.forEach(div => {
+          div.style.display = 'none';
+      });
+
+      // set target div to display active
+      targetDiv.style.display = 'block';
     }
 
     document.getElementById('toggleAddButton').addEventListener('click', function() {
-        togglePostForm();
+        //togglePostForm();
+        toggleContainer('formContainer')
     })
     </script>
   </body>
