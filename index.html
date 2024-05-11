@@ -46,8 +46,19 @@
       </div>
       <div id="blockContainer" class="divContainer">
       </div>
+      <div id="singleContainer" class="divContainer">
+        <h2> INFO </h2>
+        <span>
+          <div id="singleName">NAME: </div>
+          <div id="targetName"></div>
+        </span>
+        <span>
+          <div id="singleID">ID: </div>
+          <div id="targetID"></div>
+        </span>
+        <button id="deleteBlock"> DELETE </button>
+      </div>
     </div>
-
     <script>
       // Initialize a variable to store the input value
       let userInputValue = '';
@@ -115,6 +126,32 @@
           console.log('ERROR OCCURED: ', error);
         })
       }
+
+      function sendGetId(blockId){
+        let tempUri = userInputValue + '/' + blockId
+        console.log(tempUri) 
+        fetch(tempUri, {
+          method: 'GET',
+          headers: {
+            'content-type': 'application/json',
+          },
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log(data)
+          document.getElementById('targetID').innerHTML = data._id;
+          document.getElementById('targetName').innerHTML = data.name;
+          document.getElementById('deleteBlock').addEventListener('click', function(){
+              sendDeleteRequest(data._id);
+          });
+          toggleContainer('singleContainer')
+        })
+        .catch(error =>{
+          console.log('ERROR OCCURED: ', error);
+        })
+      };
+
+
       function sendGetRequest(){
         console.log(userInputValue);
         fetch(userInputValue) // Assuming your server endpoint is '/api/data'
@@ -130,16 +167,10 @@
                 objectDiv.textContent = `Name: ${object.name} - id: ${object._id}`
                 // add class  
                 objectDiv.classList.add('borderDiv');
-                // delete button 
-                const deleteButton = document.createElement('button');
-                deleteButton.textContent = 'X';
-                deleteButton.addEventListener('click', function() {
-                  // send out delete request
-                  sendDeleteRequest(object._id); 
+                //add click function
+                objectDiv.addEventListener('click', function(){
+                  sendGetId(object._id);
                 });
-                // Append the div to container
-                objectDiv.appendChild(deleteButton)
-                //document.getElementById('blockContainer').appendChild(deleteButton)
                 document.getElementById('blockContainer').appendChild(objectDiv)
               });
             })
