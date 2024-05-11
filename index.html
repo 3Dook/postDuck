@@ -108,6 +108,8 @@
         })
         .then(response => {
             console.log('DATA deleted: ', response);
+            sendGetRequest();
+            toggleContainer('blockContainer');
         })
         .catch(error =>{
           console.log('ERROR OCCURED: ', error);
@@ -126,18 +128,18 @@
                 const objectDiv = document.createElement('div');
                 // set content
                 objectDiv.textContent = `Name: ${object.name} - id: ${object._id}`
-                 
+                // add class  
+                objectDiv.classList.add('borderDiv');
                 // delete button 
                 const deleteButton = document.createElement('button');
                 deleteButton.textContent = 'X';
                 deleteButton.addEventListener('click', function() {
                   // send out delete request
                   sendDeleteRequest(object._id); 
-                  // potentially reload the get button
-                  sendGetRequest()
                 });
                 // Append the div to container
-                document.getElementById('blockContainer').appendChild(deleteButton)
+                objectDiv.appendChild(deleteButton)
+                //document.getElementById('blockContainer').appendChild(deleteButton)
                 document.getElementById('blockContainer').appendChild(objectDiv)
               });
             })
