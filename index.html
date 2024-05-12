@@ -71,7 +71,21 @@
             <div id="targetID"></div>
           </span>
           <button id="deleteBlock"> DELETE </button>
-        <div>
+          <button id="editBlock"> EDIT </button>
+        </div>
+
+        <div id="editContainer" class="divContainer">
+          <h2> EDIT </h2>
+          <span>
+            <div id="singleID">ID: </div>
+            <div id="editID"></div>
+          </span>
+          <span>
+            <div >NAME: </div>
+            <input type="text" id="editName" name="name" required><br><br>
+          </span>
+          <button id="saveButton"> save </button>
+        </div>
       </div>
     </div>
     <script>
@@ -158,6 +172,15 @@
           document.getElementById('targetName').innerHTML = data.name;
           document.getElementById('deleteBlock').addEventListener('click', function(){
               sendDeleteRequest(data._id);
+          });
+          document.getElementById('editBlock').addEventListener('click', function(){
+            toggleContainer('editContainer');
+          });
+          // set up edit page to reuse get request here as well
+          document.getElementById('editID').innerHTML = data._id;
+          document.getElementById('editName').value = data.name;
+          document.getElementById('saveButton').addEventListener('click', function(){
+            console.log('to do send up to edit and save')
           });
           toggleContainer('singleContainer')
         })
