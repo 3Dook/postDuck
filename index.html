@@ -18,6 +18,22 @@
         padding: 10px; /* Optional: Add padding inside the border */
         margin-bottom: 20px; /* Optional: Add margin at the bottom for spacing */
       }
+      
+      .fullContainer {
+        display: flex;
+      }
+
+      #buttonContainer {
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+      }
+      
+      #allContainer {
+        margin-top: 10px;
+        padding: 10px;
+        flex-grow: 1;
+      }
     </style>
   </head>
   <body>
@@ -27,36 +43,35 @@
         <input type="text" id="apiInput">
         <button id="preload1">PRELOAD</button>
       </div>
-      <div> 
-        <h2>GET</h2>
-        <button id="getDataBtn">GET</button>
-      </div>
-      <div>
-      </div>
-      <button id="toggleAddButton"> ADD</button>
     </div>
-    <div id="allContainer" class="borderDiv">
-      <div id="formContainer" class="divContainer">
-        <h2> POST </h2>
-        <form id="addForm" method="post" action="http://localhost:6003/api">
-          <label for="name">Name:</label><br>
-          <input type="text" id="name" name="name" required><br><br>
-          <input type="submit" value="Submit">
-        </form>
+    <div class="fullContainer">
+      <div id="buttonContainer">
+        <button id="getDataBtn">GET</button>
+        <button id="toggleAddButton"> ADD</button>
       </div>
-      <div id="blockContainer" class="divContainer">
-      </div>
-      <div id="singleContainer" class="divContainer">
-        <h2> INFO </h2>
-        <span>
-          <div id="singleName">NAME: </div>
-          <div id="targetName"></div>
-        </span>
-        <span>
-          <div id="singleID">ID: </div>
-          <div id="targetID"></div>
-        </span>
-        <button id="deleteBlock"> DELETE </button>
+      <div id="allContainer" class="borderDiv">
+        <div id="formContainer" class="divContainer">
+          <h2> POST </h2>
+          <form id="addForm" method="post" action="http://localhost:6003/api">
+            <label for="name">Name:</label><br>
+            <input type="text" id="name" name="name" required><br><br>
+            <input type="submit" value="Submit">
+          </form>
+        </div>
+        <div id="blockContainer" class="divContainer">
+        </div>
+        <div id="singleContainer" class="divContainer">
+          <h2> INFO </h2>
+          <span>
+            <div id="singleName">NAME: </div>
+            <div id="targetName"></div>
+          </span>
+          <span>
+            <div id="singleID">ID: </div>
+            <div id="targetID"></div>
+          </span>
+          <button id="deleteBlock"> DELETE </button>
+        <div>
       </div>
     </div>
     <script>
