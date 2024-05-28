@@ -18,6 +18,22 @@
         padding: 10px; /* Optional: Add padding inside the border */
         margin-bottom: 20px; /* Optional: Add margin at the bottom for spacing */
       }
+      
+      .fullContainer {
+        display: flex;
+      }
+
+      #buttonContainer {
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+      }
+      
+      #allContainer {
+        margin-top: 10px;
+        padding: 10px;
+        flex-grow: 1;
+      }
     </style>
   </head>
   <body>
@@ -27,36 +43,49 @@
         <input type="text" id="apiInput">
         <button id="preload1">PRELOAD</button>
       </div>
-      <div> 
-        <h2>GET</h2>
-        <button id="getDataBtn">GET</button>
-      </div>
-      <div>
-      </div>
-      <button id="toggleAddButton"> ADD</button>
     </div>
-    <div id="allContainer" class="borderDiv">
-      <div id="formContainer" class="divContainer">
-        <h2> POST </h2>
-        <form id="addForm" method="post" action="http://localhost:6003/api">
-          <label for="name">Name:</label><br>
-          <input type="text" id="name" name="name" required><br><br>
-          <input type="submit" value="Submit">
-        </form>
+    <div class="fullContainer">
+      <div id="buttonContainer">
+        <button id="getDataBtn">GET</button>
+        <button id="toggleAddButton"> ADD</button>
       </div>
-      <div id="blockContainer" class="divContainer">
-      </div>
-      <div id="singleContainer" class="divContainer">
-        <h2> INFO </h2>
-        <span>
-          <div id="singleName">NAME: </div>
-          <div id="targetName"></div>
-        </span>
-        <span>
-          <div id="singleID">ID: </div>
-          <div id="targetID"></div>
-        </span>
-        <button id="deleteBlock"> DELETE </button>
+      <div id="allContainer" class="borderDiv">
+        <div id="formContainer" class="divContainer">
+          <h2> POST </h2>
+          <form id="addForm" method="post" action="http://localhost:6003/api">
+            <label for="name">Name:</label><br>
+            <input type="text" id="name" name="name" required><br><br>
+            <input type="submit" value="Submit">
+          </form>
+        </div>
+        <div id="blockContainer" class="divContainer">
+        </div>
+        <div id="singleContainer" class="divContainer">
+          <h2> INFO </h2>
+          <span>
+            <div id="singleName">NAME: </div>
+            <div id="targetName"></div>
+          </span>
+          <span>
+            <div id="singleID">ID: </div>
+            <div id="targetID"></div>
+          </span>
+          <button id="deleteBlock"> DELETE </button>
+          <button id="editBlock"> EDIT </button>
+        </div>
+
+        <div id="editContainer" class="divContainer">
+          <h2> EDIT </h2>
+          <span>
+            <div id="singleID">ID: </div>
+            <div id="editID"></div>
+          </span>
+          <span>
+            <div >NAME: </div>
+            <input type="text" id="editName" name="name" required><br><br>
+          </span>
+          <button id="saveButton"> save </button>
+        </div>
       </div>
     </div>
     <script>
@@ -120,7 +149,6 @@
         .then(response => {
             console.log('DATA deleted: ', response);
             sendGetRequest();
-            toggleContainer('blockContainer');
         })
         .catch(error =>{
           console.log('ERROR OCCURED: ', error);
@@ -144,6 +172,17 @@
           document.getElementById('deleteBlock').addEventListener('click', function(){
               sendDeleteRequest(data._id);
           });
+          document.getElementById('editBlock').addEventListener('click', function(){
+            toggleContainer('editContainer');
+          });
+          // set up edit page to reuse get request here as well
+          document.getElementById('editID').innerHTML = data._id;
+          document.getElementById('editName').value = data.name;
+          document.getElementById('saveButton').addEventListener('click', function(e){
+            e.preventDefault()
+            sendEdit(data._id)
+            //reload here
+          });
           toggleContainer('singleContainer')
         })
         .catch(error =>{
@@ -151,6 +190,34 @@
         })
       };
 
+      function sendEdit(blockId){
+        let tempUri = userInputValue + '/' + blockId
+        let formObject = {name: document.getElementById('editName').value};
+        console.log(formObject)
+        fetch(tempUri, {
+          method: 'PUT',
+          headers: {
+            'content-type': 'application/json',
+          },
+          body: JSON.stringify(formObject)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Response from server:', data);
+            // Handle response data as needed
+            toggleContainer('editContainer')
+            sendGetId(blockId)
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Handle errors
+        });
+      };
 
       function sendGetRequest(){
         console.log(userInputValue);
