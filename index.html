@@ -149,7 +149,6 @@
         .then(response => {
             console.log('DATA deleted: ', response);
             sendGetRequest();
-            toggleContainer('blockContainer');
         })
         .catch(error =>{
           console.log('ERROR OCCURED: ', error);
@@ -179,8 +178,10 @@
           // set up edit page to reuse get request here as well
           document.getElementById('editID').innerHTML = data._id;
           document.getElementById('editName').value = data.name;
-          document.getElementById('saveButton').addEventListener('click', function(){
-            console.log('to do send up to edit and save')
+          document.getElementById('saveButton').addEventListener('click', function(e){
+            e.preventDefault()
+            sendEdit(data._id)
+            //reload here
           });
           toggleContainer('singleContainer')
         })
@@ -189,6 +190,34 @@
         })
       };
 
+      function sendEdit(blockId){
+        let tempUri = userInputValue + '/' + blockId
+        let formObject = {name: document.getElementById('editName').value};
+        console.log(formObject)
+        fetch(tempUri, {
+          method: 'PUT',
+          headers: {
+            'content-type': 'application/json',
+          },
+          body: JSON.stringify(formObject)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Response from server:', data);
+            // Handle response data as needed
+            toggleContainer('editContainer')
+            sendGetId(blockId)
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Handle errors
+        });
+      };
 
       function sendGetRequest(){
         console.log(userInputValue);
